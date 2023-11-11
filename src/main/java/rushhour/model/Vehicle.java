@@ -22,4 +22,7 @@ public class Vehicle {
     public Position getFront() {
         return this.front;
     }
+
+    public void move(Direction dir) {
+    }
 }

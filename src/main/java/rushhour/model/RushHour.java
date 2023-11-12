@@ -1,16 +1,57 @@
 package rushhour.model;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.Collection;
 
 public class RushHour {
     public int BOARD_DIM = 6;
     public char RED_SYMBOL = 'R';
     public char EMPTY_SYMBOL = '-';
-    char[][] board; // create a 2d array for the game board
+    String[][] board; // create a 2d array for the game board
     public Position EXIT_POS = new Position(2, 5);
 
     public RushHour(String filename) {
         // fillboard()
+    }
+
+    public void fillboard(String filename) {
+        // specify the path to the csv
+        String csvFile = filename;
+        String line;
+        String splitByCommas = ","; // separate values by commas
+
+        try (BufferedReader br = new BufferedReader(new FileReader(csvFile))) {
+            // define the number of rows and columns in the csv file
+            int rows = 3; // number of rows in the csv file
+            int cols = 5; // number of columns in the csv file
+            String[][] board = new String[rows][cols];
+
+            int row = 0;
+            while ((line = br.readLine()) != null) {
+                String[] values = line.split(splitByCommas);
+
+                // Populate the 2D array with the CSV values
+                for (int col = 0; col < values.length; col++) {
+                    board[row][col] = values[col];
+                }
+
+                row++; // move to the next row in the 2d array
+            }
+
+            for (String[] rowArray : board) {
+                for (String value : rowArray) {
+                    System.out.print(value + " ");
+                }
+                System.out.println();
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     }
 
     public void moveVehicle(Move move) {

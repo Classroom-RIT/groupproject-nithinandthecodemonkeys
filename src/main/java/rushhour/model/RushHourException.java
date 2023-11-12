@@ -6,6 +6,9 @@ public class RushHourException extends Exception {
         super(errorMessage);
     }
 
+    public RushHourException() {
+    }
+
     // prints when a horizontal vehicle tries to move up or down and vice versa
     public void VehicleOrientationException() {
         System.out.println("Vehicle can't move in that direction");

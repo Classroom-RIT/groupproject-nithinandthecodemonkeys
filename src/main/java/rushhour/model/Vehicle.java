@@ -1,13 +1,11 @@
 package rushhour.model;
 
-import com.mysql.cj.exceptions.CJException;
-
 public class Vehicle {
     private char symbol;
     private Position back;
     private Position front;
     private Orientation orientation;
-    public RushHourException exception;
+    // public RushHourException exception;
 
     public Vehicle(char symbol, Position back, Position front) {
         this.symbol = symbol;
@@ -41,7 +39,7 @@ public class Vehicle {
         return this.orientation;
     }
 
-    public void move(Direction direction) {
+    public void move(Direction direction) throws RushHourException {
         int backCol = this.back.getCol();
         int frontCol = this.front.getCol();
         int backRow = this.back.getRow();
@@ -52,7 +50,7 @@ public class Vehicle {
         // throw exception VehicleOrientationException
         if(this.orientation == Orientation.HORIZONTAL)  {
             if(direction == Direction.UP || direction == Direction.DOWN) {
-                throw new CJException.VehicleOrientationException();
+                throw new RushHourException("Vehicle can't move in that direction");
             }
         // if move direction is right or left
         // if car is not on the edge of the grid, then move vehicle
@@ -66,7 +64,7 @@ public class Vehicle {
                     //if the movement to the left would make the car go beyond the edge of the board then 
                     //throw exception
                     else{
-                        throw new exception.VehicleOffGridException();
+                        throw new RushHourException("Your vehicle can't move off the grid.");
                     }
                 }
                 else if(direction == Direction.RIGHT) {
@@ -77,7 +75,7 @@ public class Vehicle {
                     //if the movement to the right would make the car go beyond the edge of the board then 
                     //throw exception
                     else{
-                        throw new exception.VehicleOffGridException();
+                        throw new RushHourException("Your vehicle can't move off the grid.");
                     }
                 }
             }

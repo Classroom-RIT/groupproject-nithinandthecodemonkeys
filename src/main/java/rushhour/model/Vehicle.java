@@ -1,5 +1,7 @@
 package rushhour.model;
 
+import com.mysql.cj.exceptions.CJException;
+
 public class Vehicle {
     private char symbol;
     private Position back;
@@ -50,7 +52,7 @@ public class Vehicle {
         // throw exception VehicleOrientationException
         if(this.orientation == Orientation.HORIZONTAL)  {
             if(direction == Direction.UP || direction == Direction.DOWN) {
-                throw new exception.VehicleOrientationException();
+                throw new CJException.VehicleOrientationException();
             }
         // if move direction is right or left
         // if car is not on the edge of the grid, then move vehicle

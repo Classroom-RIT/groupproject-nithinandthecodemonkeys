@@ -7,15 +7,10 @@ public class RushHour {
     public char RED_SYMBOL = 'R';
     public char EMPTY_SYMBOL = '-';
     char[][] board; // create a 2d array for the game board
-    public public Position EXIT_POS = Position(2, 5);
+    public Position EXIT_POS = new Position(2, 5);
 
     public RushHour(String filename) {
         // fillboard()
-    }
-
-    public void fillBoard(String filename) {
-        // resize board to size of csv file
-        // nested for loop to fill the board using a csv
     }
 
     public void moveVehicle(Move move) {

@@ -82,11 +82,38 @@ public class Vehicle {
         }
 
         // else vehicle is vertical:
+        else if(this.orientation == Orientation.VERTICAL)  {
+            if(direction == Direction.LEFT || direction == Direction.RIGHT) {
+                throw new RushHourException("Vehicle can't move in that direction");
+            }
         // if move direction is up or down
+        // if car is not on the edge of the grid, then move vehicle
         // for vertical vehicle back.row < front.row && back.col == front.col
-        // move vehicle
-        // else
-        // throw exception VehicleOrientationException
+            else{
+                if(direction == Direction.UP) {
+                    if(backRow < 5) {
+                        this.back.setRow(backRow+1);
+                        this.front.setRow(frontRow+1);
+                    }
+                    //if the movement to the left would make the car go beyond the edge of the board then 
+                    //throw exception
+                    else{
+                        throw new RushHourException("Your vehicle can't move off the grid.");
+                    }
+                }
+                else if(direction == Direction.DOWN) {
+                    if(frontRow > 0) {
+                        this.back.setRow(backRow-1);
+                        this.front.setRow(frontRow-1);
+                    }
+                    //if the movement to the down would make the car go beyond the edge of the board then 
+                    //throw exception
+                    else{
+                        throw new RushHourException("Your vehicle can't move off the grid.");
+                    }
+                }
+            }
+        }
 
     }
 }

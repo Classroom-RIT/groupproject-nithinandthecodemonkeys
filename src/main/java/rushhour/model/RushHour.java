@@ -10,7 +10,8 @@ public class RushHour {
     public int BOARD_DIM = 6;
     public char RED_SYMBOL = 'R';
     public char EMPTY_SYMBOL = '-';
-    String[][] board; // create a 2d array for the game board
+    public int MOVE_COUNT = 0;
+    Char[][] board; // create a 2d array for the game board
     public Position EXIT_POS = new Position(2, 5);
 
     public RushHour(String filename) {
@@ -74,9 +75,17 @@ public class RushHour {
         }
     }
 
+    //Maybe make a helper function to find out the orientation and direction of the move
+
     public void moveVehicle(Move move) {
         // if another vehicle occupying the space that the vehicle would move to
         // throw rushhourexception
+        /*
+         * 1) Find where the car symbol from the move is on the board
+         * 2) Find out the the orientation and which the direction the move is so you know which side of the car to look at
+         * 3) Then finally check if the space next to the car is occupied aka if the space is not empty
+         */
+
         // if else the vehicle would move off the grid
         // throw rushhourexception
         // if else an invalid direction is given, e.g. Direction.UP is specified for a
@@ -86,10 +95,17 @@ public class RushHour {
         // throw rushhourexception
         // else
         // move vehicle
+
+        MOVE_COUNT++;
     }
 
     public boolean isGameOver() {
-        return false;
+        if(board[2][5] == RED_SYMBOL) {
+            return true;
+        }
+        else{
+            return false;
+        }
     }
 
     public Collection<Move> getPossibleMoves() {
@@ -97,7 +113,7 @@ public class RushHour {
     }
 
     public int getMoveCount() {
-        return 0;
+        return MOVE_COUNT;
     }
 
     public static void main(String[] args) {

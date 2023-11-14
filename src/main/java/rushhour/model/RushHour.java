@@ -149,12 +149,15 @@ public class RushHour {
     }
 
     public boolean isGameOver() {
-        if (board[2][5] == RED_SYMBOL) {
-            return true;
-        } else {
-            return false;
+        // check if the board has at least 3 rows and 6 columns
+        if (board.length >= 3 && board[0].length >= 6) {
+            if (board[2][5] == RED_SYMBOL) {
+                return true;
+            }
         }
+        return false;
     }
+    
 
     public Collection<Move> getPossibleMoves() {
         return null;
@@ -172,15 +175,18 @@ public class RushHour {
         }
     }
 
-    public void parseCommand(RushHour rushHour, String command, String action) {
-        if (command == "help") {
+    public void parseCommand(RushHour rushHour, String command) throws RushHourException {
+        // check for help
+        if (command == "help" || command == "Help") {
             System.out.println("Help Menu:\n" + //
                     "        help - this menu\n" + //
                     "        quit - quit\n" + //
                     "        hint - display a valid move\n" + //
                     "        reset - reset the game\n" + //
                     "        <symbol> <UP|DOWN|LEFT|RIGHT> - move the vehicle one space in the given direction");
-        } else if (command == "move") {
+            
+        // check for move
+        } else if (command == "move" || command == "Move") {
             Scanner scanner = new Scanner(System.in);
 
             System.out.print("Enter symbol and direction (e.g., A UP): ");
@@ -199,22 +205,31 @@ public class RushHour {
                 // System.out.println("Symbol: " + move.getSymbol());
                 // System.out.println("Direction: " + move.getDirection());
             } else {
-                System.out.println("Invalid input format. Please use the format 'Symbol Direction'.");
+                System.out.println("Invalid input format. Please use the format 'Symbol Direction'!");
             }
 
             scanner.close();
-        } else if (command == "reset")
+
+            // check for reset
+        } else if (command == "reset" || command == "Reset")
+        System.out.println("Clearing board...");
+        System.out.println("New Game");
             rushHour.resetBoard();
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws RushHourException {
         try (Scanner scanner = new Scanner(System.in)) {
             System.out.print("Enter a Rush Hour filename: ");
             String filename = scanner.nextLine();
             RushHour rushHour = new RushHour(filename);
             System.out.println("Type 'help' for help menu.");
             rushHour.printBoard();
-
+            while(rushHour.isGameOver() == false) {
+                System.out.print("> ");
+                String command = scanner.nextLine();
+                String resultString = command.replace(">", "");
+                rushHour.parseCommand(rushHour, resultString);
+            }
         }
 
     }

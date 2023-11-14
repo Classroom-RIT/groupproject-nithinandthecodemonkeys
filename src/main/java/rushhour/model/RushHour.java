@@ -93,14 +93,14 @@ public class RushHour {
         char symbol = move.getSymbol();
         Direction direction = move.getDirection();
 
-        // 1) Find where the car symbol from the move is on the board
+        // 1) find where the car symbol from the move is on the board
         Position vehiclePos = findVehiclePosition(symbol);
 
-        // 2) Find out the orientation and direction of the move
+        // 2) find out the orientation and direction of the move
         boolean isHorizontal = (direction == Direction.LEFT || direction == Direction.RIGHT);
         boolean isVertical = (direction == Direction.UP || direction == Direction.DOWN);
 
-        // 3) Check if the space next to the car is occupied
+        // 3) check if the space next to the car is occupied
         if (vehiclePos != null) {
             int row = vehiclePos.getRow();
             int col = vehiclePos.getCol();
@@ -108,15 +108,14 @@ public class RushHour {
             if (isHorizontal) {
                 if (direction == Direction.LEFT) {
                     if (col - 1 >= 0 && board[row][col - 1] == EMPTY_SYMBOL) {
-                        // Move the vehicle to the left
+                        // direction.LEFT
                         board[row][col - 1] = symbol;
                         board[row][col + 1] = EMPTY_SYMBOL;
                     } else {
                         throw new RushHourException("Invalid move. The space next to the vehicle is occupied.");
                     }
-                } else { // Direction.RIGHT
+                } else { // direction.RIGHT
                     if (col + 2 < BOARD_DIM && board[row][col + 2] == EMPTY_SYMBOL) {
-                        // Move the vehicle to the right
                         board[row][col + 2] = symbol;
                         board[row][col] = EMPTY_SYMBOL;
                     } else {

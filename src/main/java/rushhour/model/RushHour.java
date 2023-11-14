@@ -3,6 +3,7 @@ package rushhour.model;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Scanner;
 
 public class RushHour {
@@ -88,27 +89,62 @@ public class RushHour {
     // Maybe make a helper function to find out the orientation and direction of the
     // move
 
-    public void moveVehicle(Move move) {
-        Position vehiclePosition = findVehiclePosition(EMPTY_SYMBOL)
-        // if another vehicle occupying the space that the vehicle would move to
-        // throw rushhourexception
-        /*
-         * 1) Find where the car symbol from the move is on the board
-         * 2) Find out the the orientation and which the direction the move is so you
-         * know which side of the car to look at
-         * 3) Then finally check if the space next to the car is occupied aka if the
-         * space is not empty
-         */
+    public void moveVehicle(Move move) throws RushHourException {
+        char symbol = move.getSymbol();
+        Direction direction = move.getDirection();
 
-        // if else the vehicle would move off the grid
-        // throw rushhourexception
-        // if else an invalid direction is given, e.g. Direction.UP is specified for a
-        // horizontal vehicle
-        // throw rushhourexception
-        // if else an invalid vehicle symbol was given
-        // throw rushhourexception
-        // else
-        // move vehicle
+        // 1) Find where the car symbol from the move is on the board
+        Position vehiclePos = findVehiclePosition(symbol);
+
+        // 2) Find out the orientation and direction of the move
+        boolean isHorizontal = (direction == Direction.LEFT || direction == Direction.RIGHT);
+        boolean isVertical = (direction == Direction.UP || direction == Direction.DOWN);
+
+        // 3) Check if the space next to the car is occupied
+        if (vehiclePos != null) {
+            int row = vehiclePos.getRow();
+            int col = vehiclePos.getCol();
+
+            if (isHorizontal) {
+                if (direction == Direction.LEFT) {
+                    if (col - 1 >= 0 && board[row][col - 1] == EMPTY_SYMBOL) {
+                        // Move the vehicle to the left
+                        board[row][col - 1] = symbol;
+                        board[row][col + 1] = EMPTY_SYMBOL;
+                    } else {
+                        throw new RushHourException("Invalid move. The space next to the vehicle is occupied.");
+                    }
+                } else { // Direction.RIGHT
+                    if (col + 2 < BOARD_DIM && board[row][col + 2] == EMPTY_SYMBOL) {
+                        // Move the vehicle to the right
+                        board[row][col + 2] = symbol;
+                        board[row][col] = EMPTY_SYMBOL;
+                    } else {
+                        throw new RushHourException("Invalid move. The space next to the vehicle is occupied.");
+                    }
+                }
+            } else if (isVertical) {
+                if (direction == Direction.UP) {
+                    if (row - 1 >= 0 && board[row - 1][col] == EMPTY_SYMBOL) {
+                        // Move the vehicle up
+                        board[row - 1][col] = symbol;
+                        board[row + 1][col] = EMPTY_SYMBOL;
+                    } else {
+                        throw new RushHourException("Invalid move. The space next to the vehicle is occupied.");
+                    }
+                } else { // Direction.DOWN
+                    if (row + 2 < BOARD_DIM && board[row + 2][col] == EMPTY_SYMBOL) {
+                        // Move the vehicle down
+                        board[row + 2][col] = symbol;
+                        board[row][col] = EMPTY_SYMBOL;
+                    } else {
+                        throw new RushHourException("Invalid move. The space next to the vehicle is occupied.");
+                    }
+                }
+            }
+        } else {
+            throw new RushHourException("Invalid move. The specified vehicle symbol was not found on the board.");
+        }
 
         MOVE_COUNT++;
     }
@@ -138,16 +174,37 @@ public class RushHour {
     }
 
     public void parseCommand(RushHour rushHour, String command, String action) {
-        if(command == "help") {
+        if (command == "help") {
             System.out.println("Help Menu:\n" + //
                     "        help - this menu\n" + //
                     "        quit - quit\n" + //
                     "        hint - display a valid move\n" + //
                     "        reset - reset the game\n" + //
                     "        <symbol> <UP|DOWN|LEFT|RIGHT> - move the vehicle one space in the given direction");
-        } else if(command == "move") {
-            rushHour.moveVehicle(null);
-        } else if(command == "reset")
+        } else if (command == "move") {
+            Scanner scanner = new Scanner(System.in);
+
+            System.out.print("Enter symbol and direction (e.g., A UP): ");
+            String input = scanner.nextLine();
+
+            // Split the input into symbol and direction
+            String[] parts = input.split(" ");
+            if (parts.length == 2) {
+                char symbol = parts[0].charAt(0);
+                Direction direction = Direction.valueOf(parts[1].toUpperCase());
+
+                // Create a Move object
+                Move move = new Move(symbol, direction);
+                rushHour.moveVehicle(move);
+
+                // System.out.println("Symbol: " + move.getSymbol());
+                // System.out.println("Direction: " + move.getDirection());
+            } else {
+                System.out.println("Invalid input format. Please use the format 'Symbol Direction'.");
+            }
+
+            scanner.close();
+        } else if (command == "reset")
             rushHour.resetBoard();
     }
 
@@ -158,7 +215,7 @@ public class RushHour {
             RushHour rushHour = new RushHour(filename);
             System.out.println("Type 'help' for help menu.");
             rushHour.printBoard();
-            
+
         }
 
     }

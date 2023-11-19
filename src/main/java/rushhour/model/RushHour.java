@@ -35,7 +35,7 @@ public class RushHour {
     }
 
     public char[][] getBoard() {
-        return board.clone();  // Return a copy to prevent external modification
+        return board.clone(); // return a copy to prevent modifications
     }
 
     public void fillboard(String filename) {
@@ -104,6 +104,7 @@ public class RushHour {
             System.out.println();
         }
     }
+
     // Maybe make a helper function to find out the orientation and direction of the
     // move
     public void moveVehicle(Move move) {
@@ -226,13 +227,13 @@ public class RushHour {
 
                     Move move = new Move(symbol, direction);
                     rushHour.moveVehicle(move);
-                // System.out.println("Symbol: " + move.getSymbol());
-                // System.out.println("Direction: " + move.getDirection());
-            } else {
+                    // System.out.println("Symbol: " + move.getSymbol());
+                    // System.out.println("Direction: " + move.getDirection());
+                } else {
                     System.out.println("Invalid input format. Please use the format 'Symbol Direction'!");
                 }
             }
-            
+
             // check for reset
         } else if (command.equals("reset") || command.equals("Reset")) {
             System.out.println("Clearing board...");

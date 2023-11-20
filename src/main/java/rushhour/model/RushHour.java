@@ -272,6 +272,12 @@ public class RushHour {
                 String command = scanner.nextLine();
                 String resultString = command.replace(">", "");
                 System.out.println(resultString);
+
+                if (resultString.equals("quit") || resultString.equals("Quit")) {
+                    System.out.println("Quitting. Have a nice day!");
+                    return;
+                }
+
                 rushHour.parseCommand(rushHour, resultString);
             }
         }

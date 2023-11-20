@@ -5,6 +5,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Scanner;
 
 import rushhour.view.RushHourObserver;
@@ -187,7 +188,23 @@ public class RushHour {
     }
 
     public Collection<Move> getPossibleMoves() {
-        return null;
+        Collection<Move> possibleMoves = new HashSet<>();
+
+        for (Vehicle vehicle : vehicles.values()) {
+            for (Direction direction : Direction.values()) {
+                Move move = new Move(vehicle.getSymbol(), direction);
+
+                try {
+                    vehicle.move(direction);
+                    possibleMoves.add(move);
+                } 
+                catch (RushHourException ignored) {
+                    // Move is not valid, so ignore and continue checking other directions.
+                }
+            }
+        }
+
+        return possibleMoves;
     }
 
     public int getMoveCount() {

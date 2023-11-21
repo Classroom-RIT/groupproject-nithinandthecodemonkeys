@@ -31,8 +31,8 @@ public class RushHour {
     }
 
     public RushHour(String filename) {
-        fillboard(filename);
         board = new char[BOARD_DIM][BOARD_DIM];
+        fillboard(filename);
     }
 
     public char[][] getBoard() {
@@ -190,19 +190,19 @@ public class RushHour {
     public Collection<Move> getPossibleMoves() {
         Collection<Move> possibleMoves = new HashSet<>();
 
-        for (Vehicle vehicle : vehicles.values()) {
-            for (Direction direction : Direction.values()) {
-                Move move = new Move(vehicle.getSymbol(), direction);
+        // for (Vehicle vehicle : ) {
+        //     for (Direction direction : Direction.values()) {
+        //         Move move = new Move(vehicle.getSymbol(), direction);
 
-                try {
-                    vehicle.move(direction);
-                    possibleMoves.add(move);
-                } 
-                catch (RushHourException ignored) {
-                    // Move is not valid, so ignore and continue checking other directions.
-                }
-            }
-        }
+        //         try {
+        //             vehicle.move(direction);
+        //             possibleMoves.add(move);
+        //         } 
+        //         catch (RushHourException ignored) {
+        //             // Move is not valid, so ignore and continue checking other directions.
+        //         }
+        //     }
+        // }
 
         return possibleMoves;
     }
@@ -272,6 +272,12 @@ public class RushHour {
                 String command = scanner.nextLine();
                 String resultString = command.replace(">", "");
                 System.out.println(resultString);
+
+                if (resultString.equals("quit") || resultString.equals("Quit")) {
+                    System.out.println("Quitting. Have a nice day!");
+                    return;
+                }
+
                 rushHour.parseCommand(rushHour, resultString);
             }
         }

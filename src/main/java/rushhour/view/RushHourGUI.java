@@ -44,6 +44,12 @@ public class RushHourGUI extends Application implements RushHourObserver {
         Scene scene = new Scene(gridPane, 400, 400);
         primaryStage.setScene(scene);
         primaryStage.show();
+
+         Button hintButton = new Button("Hint");
+        Button resetButton = new Button("Reset");
+        hintButton.setOnAction(e -> handleHint());
+        resetButton.setOnAction(e -> handleReset());
+        
     }
 
     private void initializeGrid() {

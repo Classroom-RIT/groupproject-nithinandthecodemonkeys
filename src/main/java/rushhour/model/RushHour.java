@@ -11,7 +11,7 @@ import java.util.Scanner;
 import rushhour.view.RushHourObserver;
 
 public class RushHour {
-    public int BOARD_DIM = 6;
+    public int BOARD_DIM = 5;
     public char RED_SYMBOL = 'R';
     public char EMPTY_SYMBOL = '-';
     public int MOVE_COUNT = 0;

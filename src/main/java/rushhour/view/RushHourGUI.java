@@ -47,10 +47,20 @@ public class RushHourGUI extends Application implements RushHourObserver {
 
          Button hintButton = new Button("Hint");
         Button resetButton = new Button("Reset");
-        hintButton.setOnAction(e -> handleHint());
-        resetButton.setOnAction(e -> handleReset());
+        //hintButton.setOnAction(e -> handleHint());
+        //resetButton.setOnAction(e -> handleReset());
         
     }
+
+    /*private Object handleReset() {
+        RushHourGUI reset = new RushHourGUI();
+        reset.resetBoard();
+        return null;
+    }
+
+    private Object handleHint() {
+        return null;
+    }*/
 
     private void initializeGrid() {
         for (int i = 0; i < rushHour.BOARD_DIM; i++) {
@@ -76,7 +86,7 @@ public class RushHourGUI extends Application implements RushHourObserver {
                 buttons[i][j].setText(String.valueOf(board[i][j]));
 
                 if (board[i][j] != 'R') {
-                    buttons[i][j].setStyle("-fx-background-color: " + colors[i] + "; -fx-font-size: 18;");
+                    buttons[i][j].setStyle("-fx-background-color: white" + /*colors[i]*/ "; -fx-font-size: 18;");
                     System.out.println(colors[i]);
                 } else {
                     buttons[i][j].setStyle("-fx-background-color: red; -fx-font-size: 18;");

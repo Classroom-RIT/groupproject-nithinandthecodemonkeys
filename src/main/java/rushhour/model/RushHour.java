@@ -60,20 +60,34 @@ public class RushHour {
             br.close();
             br = new BufferedReader(new FileReader(csvFile));
 
-            // create the 2d array with dynamic dimensions
-            board = new char[rows][cols];
+            // create the 2d array with not dynamic dimensions
+            board = new char[BOARD_DIM][BOARD_DIM];
 
-            int row = 0;
+            Vehicle[] vehicles = new Vehicle[0];
             while ((line = br.readLine()) != null) {
                 String[] values = line.split(splitByCommas);
-
-                // populate the 2d array with the csv values
-                for (int col = 0; col < values.length; col++) {
-                    board[row][col] = values[col].charAt(0);
+                Integer[] coords = new Integer[4];
+                for(int i = 1; i < values.length; i++) {
+                    coords[i-1] = Integer.valueOf(values[i]);
                 }
 
-                row++; // move to the next row in the 2d array
+                Vehicle car = new Vehicle(values[0].charAt(0), new Position(coords[0], coords[1]), new Position(coords[2], coords[3]));
+                vehicles[vehicles.length] = car;
             }
+
+            for(int row=0; row<BOARD_DIM; row++) {
+                for(int col=0; col<BOARD_DIM; col++) {
+                    for(Vehicle car :  vehicles) {
+                    
+                        if(car.getFront().getCol() == col) {
+                            board[row][col] = car.getSymbol();
+                        }
+                        if(car.getFront().getRow() == col) {
+                            board[row][col] = car.getSymbol();
+                        }
+                }
+            }
+        }
 
             br.close();
 

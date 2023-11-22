@@ -19,9 +19,10 @@ public class RushHourGUI extends Application implements RushHourObserver {
     private GridPane gridPane;
     private Button[][] buttons;
     // hold all of our vehicle colors in an array
-    private static String[] colors = new String[] { "#FF4000", "#FF7E00", "#FFDB00", "#CAFA00", "#00FAA0", "#00FCD4",
-            "#00CBFF", "#0079FF", "#0433FF",
-            "#ED3EFF", "#FF309A", "#FF2E88" };
+    private static String[] colors = new String[] {
+        "#FF4000", "#FF7E00", "#FFDB00", "#CAFA00", "#00FAA0", "#00FCD4",
+        "#00CBFF", "#0079FF", "#0433FF", "#ED3EFF", "#FF309A", "#FF2E88"
+    };
 
     public static void main(String[] args) {
         launch(args);
@@ -36,7 +37,7 @@ public class RushHourGUI extends Application implements RushHourObserver {
         primaryStage.setTitle("Rush Hour Game");
 
         gridPane = new GridPane();
-        buttons = new Button[rushHour.BOARD_DIM][rushHour.BOARD_DIM];
+        buttons = new Button[rushHour.BOARD_DIM -1][rushHour.BOARD_DIM -1];
 
         initializeGrid();
         updateGrid();
@@ -53,21 +54,24 @@ public class RushHourGUI extends Application implements RushHourObserver {
     }
 
     private void initializeGrid() {
+        buttons = new Button[rushHour.BOARD_DIM][rushHour.BOARD_DIM];  // Initialize the array here
+    
         for (int i = 0; i < rushHour.BOARD_DIM; i++) {
             for (int j = 0; j < rushHour.BOARD_DIM; j++) {
                 Button button = new Button();
                 button.setStyle("-fx-background-radius: 0");
                 button.setMinSize(50, 50);
-
+    
                 final int finalI = i;
                 final int finalJ = j;
-
+    
                 button.setOnAction(event -> handleButtonClick(finalI, finalJ));
                 buttons[i][j] = button;
                 gridPane.add(button, j, i);
             }
         }
     }
+    
 
     private void updateGrid() {
         char[][] board = rushHour.getBoard();
@@ -76,8 +80,8 @@ public class RushHourGUI extends Application implements RushHourObserver {
                 buttons[i][j].setText(String.valueOf(board[i][j]));
 
                 if (board[i][j] != 'R') {
-                    buttons[i][j].setStyle("-fx-background-color: " + colors[i] + "; -fx-font-size: 18;");
-                    System.out.println(colors[i]);
+                    buttons[i][j].setStyle("-fx-background-color: " + colors[i % colors.length] + "; -fx-font-size: 18;");
+                    System.out.println(colors[i % colors.length]);
                 } else {
                     buttons[i][j].setStyle("-fx-background-color: red; -fx-font-size: 18;");
                 }

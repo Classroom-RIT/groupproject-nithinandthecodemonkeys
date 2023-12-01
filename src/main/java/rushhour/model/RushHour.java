@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Scanner;
 import java.util.TreeMap;
 
@@ -20,6 +21,9 @@ public class RushHour {
     public Position EXIT_POS = new Position(2, 5);
 
     private Collection<RushHourObserver> observers = new ArrayList<>();
+    private ArrayList<Vehicle> carList;
+
+    private TreeMap<Character, Vehicle> carMap;
 
     public void registerObserver(RushHourObserver observer) {
         observers.add(observer);
@@ -33,8 +37,11 @@ public class RushHour {
 
     public RushHour(String filename) {
         board = new char[BOARD_DIM][BOARD_DIM];
+        carMap = new TreeMap<>();
+        carList = new ArrayList<>();
         fillboard(filename);
     }
+    
 
     public char[][] getBoard() {
         return board.clone(); // return a copy to prevent modifications
@@ -43,22 +50,26 @@ public class RushHour {
     public void fillboard(String filename) {
         this.observers = new ArrayList<>();
         ArrayList<Vehicle> carList = new ArrayList<>();
-        TreeMap<Character, Vehicle> carMap = new TreeMap<>();
-        try (FileReader file = new FileReader(filename);
+        
+        try (FileReader file = new FileReader(filename); 
              BufferedReader reader = new BufferedReader(file)) {
             String line = reader.readLine();
             while (line != null) {
                 String[] vehicle = line.split(",");
                 char symbol = vehicle[0].charAt(0);
+
                 int backRow = Integer.parseInt(vehicle[1]);
                 int backCol = Integer.parseInt(vehicle[2]);
                 int frontRow = Integer.parseInt(vehicle[3]);
                 int frontCol = Integer.parseInt(vehicle[4]);
+
                 Position back = new Position(backRow, backCol);
                 Position front = new Position(frontRow, frontCol);
+
                 Vehicle newCar = new Vehicle(symbol, back, front);
                 carList.add(newCar);
                 carMap.put(symbol, newCar);
+
                 line = reader.readLine();
             }
         } catch (IOException ioe) {
@@ -112,74 +123,43 @@ public class RushHour {
         }
     }
 
-    // Maybe make a helper function to find out the orientation and direction of the
-    // move
-    public void moveVehicle(Move move) {
-        char symbol = move.getSymbol();
-        Direction direction = move.getDirection();
+    public void moveVehicle(Move move) throws RushHourException, Exception {
+        System.out.println(getOccupiedSpots());
+        if (carMap.containsKey(move.getSymbol())) {
+            Vehicle car = carMap.get(move.getSymbol());
+            try {
+                List<Position> occupiedSpots = getOccupiedSpots();
+                Move validMove = car.move(move.getDirection(), occupiedSpots, carList);
 
-        try {
-            // 1) find where the car symbol from the move is on the board
-            Position vehiclePos = findVehiclePosition(symbol);
-            // 2) find out the orientation and direction of the move
-            boolean isHorizontal = (direction == Direction.LEFT || direction == Direction.RIGHT);
-            boolean isVertical = (direction == Direction.UP || direction == Direction.DOWN);
-            // 3) check if the space next to the car is occupied
-            if (vehiclePos != null) {
-                int row = vehiclePos.getRow();
-                int col = vehiclePos.getCol();
+                if (validMove != null) {
+                    MOVE_COUNT++; // increment the moveCount
+                    notifyObservers(car); // notify the observer if the move goes through
+                } else {
+                    // if the move isn't in the list of possible moves, throw an error
+                    throw new RushHourException("Invalid move for vehicle " + move.getSymbol() + ".");
+                }
+            } catch (Exception e) {
+                throw new RushHourException(
+                        "Invalid move for vehicle " + move.getSymbol() + " in direction " + move.getDirection().toString());
+            }
+        }
+    }
 
-                if (isHorizontal) {
-                    if (direction == Direction.LEFT) {
-                        if (col - 1 >= 0 && board[row][col - 1] == EMPTY_SYMBOL) {
-                            board[row][col - 1] = symbol;
-                            board[row][col + 1] = EMPTY_SYMBOL;
-                        } else {
-                            throw new RushHourException("Invalid move. The space next to the vehicle is occupied.");
-                        }
-                    } else {
-                        if (col + 2 < BOARD_DIM && board[row][col + 2] == EMPTY_SYMBOL) {
-                            board[row][col + 2] = symbol;
-                            board[row][col] = EMPTY_SYMBOL;
-                        } else {
-                            throw new RushHourException("Invalid move. The space next to the vehicle is occupied.");
-                        }
-                    }
-                } else if (isVertical) {
-                    if (direction == Direction.UP) {
-                        if (row - 1 >= 0 && board[row - 1][col] == EMPTY_SYMBOL) {
-                            board[row - 1][col] = symbol;
-                            board[row + 1][col] = EMPTY_SYMBOL;
-                        } else {
-                            throw new RushHourException("Invalid move. The space next to the vehicle is occupied.");
-                        }
-                    } else {
-                        if (row + 2 < BOARD_DIM && board[row + 2][col] == EMPTY_SYMBOL) {
-                            // Move the vehicle down
-                            board[row + 2][col] = symbol;
-                            board[row][col] = EMPTY_SYMBOL;
-                        } else {
-                            throw new RushHourException("Invalid move. The space next to the vehicle is occupied.");
-                        }
-                    }
+    public List<Position> getOccupiedSpots() {
+        List<Position> occupiedSpots = new ArrayList<>();
+
+        for (Vehicle car : carList) {
+            if (car.isHorizontal()) {
+                for (int col = car.getBack().getCol(); col <= car.getFront().getCol(); col++) {
+                    occupiedSpots.add(new Position(car.getBack().getRow(), col));
                 }
             } else {
-                throw new RushHourException("Invalid move. The specified vehicle symbol was not found on the board.");
+                for (int row = car.getBack().getRow(); row <= car.getFront().getRow(); row++) {
+                    occupiedSpots.add(new Position(row, car.getBack().getCol()));
+                }
             }
-
-            // Notify observers about the move
-            Position frontPos;
-            if (isHorizontal) {
-                frontPos = new Position(vehiclePos.getRow(), vehiclePos.getCol() + 2);
-            } else {
-                frontPos = new Position(vehiclePos.getRow() + 2, vehiclePos.getCol());
-            }
-            notifyObservers(new Vehicle(symbol, vehiclePos, frontPos));
-
-            MOVE_COUNT++;
-        } catch (RushHourException e) {
-            System.out.println("Error: " + e.getMessage());
         }
+        return occupiedSpots;
     }
 
     public boolean isGameOver() {
@@ -228,7 +208,7 @@ public class RushHour {
         }
     }
 
-    public void parseCommand(RushHour rushHour, String command) throws RushHourException {
+    public void parseCommand(RushHour rushHour, String command) throws Exception {
         // check for help
         if (command.equals("help") || command.equals("Help")) {
             System.out.println("Help Menu:\n" + //
@@ -242,20 +222,19 @@ public class RushHour {
             try (Scanner scanner = new Scanner(System.in)) {
                 System.out.print("Enter symbol and direction (e.g., A UP): ");
                 String input = scanner.nextLine();
-
+    
                 String[] parts = input.split(" ");
                 if (parts.length == 2) {
                     char symbol = parts[0].charAt(0);
                     Direction direction = Direction.valueOf(parts[1].toUpperCase());
-
+    
                     Move move = new Move(symbol, direction);
                     rushHour.moveVehicle(move);
-                    // System.out.println("Symbol: " + move.getSymbol());
-                    // System.out.println("Direction: " + move.getDirection());
                 } else {
                     System.out.println("Invalid input format. Please use the format 'Symbol Direction'!");
                 }
             }
+
 
             // check for reset
         } else if (command.equals("reset") || command.equals("Reset")) {
@@ -265,26 +244,41 @@ public class RushHour {
         }
     }
 
-    public static void main(String[] args) throws RushHourException {
+    public static void main(String[] args) throws Exception {
         try (Scanner scanner = new Scanner(System.in)) {
             System.out.print("Enter a Rush Hour filename: ");
             String filename = scanner.nextLine();
             RushHour rushHour = new RushHour(filename);
             System.out.println("Type 'help' for the help menu.");
             rushHour.printBoard();
-
+    
             while (!rushHour.isGameOver()) {
                 System.out.print("> ");
-                String command = scanner.nextLine();
-                String resultString = command.replace(">", "");
-                System.out.println(resultString);
+    
+                if (scanner.hasNextLine()) {
+                    String command = scanner.nextLine();
+                    String resultString = command.replace(">", "");
+    
+                    if (resultString.equals("quit") || resultString.equals("Quit")) {
+                        System.out.println("Quitting. Have a nice day!");
+                        return;
+                    } else if (resultString.equals("move") || resultString.equals("Move")) {
+                        // Handle the move command
+                        System.out.print("Enter symbol and direction (e.g., A UP): ");
+                        if (scanner.hasNextLine()) {
+                            String moveCommand = scanner.nextLine();
+                            rushHour.parseCommand(rushHour, moveCommand);
+                        }
+                    } else {
+                        // Handle other commands
+                        rushHour.parseCommand(rushHour, resultString);
+                    }
 
-                if (resultString.equals("quit") || resultString.equals("Quit")) {
-                    System.out.println("Quitting. Have a nice day!");
+                    rushHour.printBoard();
+                } else {
+                    System.out.println("No command entered. Exiting.");
                     return;
                 }
-
-                rushHour.parseCommand(rushHour, resultString);
             }
         }
     }

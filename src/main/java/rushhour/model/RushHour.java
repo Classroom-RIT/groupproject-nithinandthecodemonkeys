@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Scanner;
+import java.util.TreeMap;
 
 import rushhour.view.RushHourObserver;
 
@@ -40,47 +41,52 @@ public class RushHour {
     }
 
     public void fillboard(String filename) {
-        String csvFile = "data/" + filename;
-        String line;
-        String splitByCommas = ","; // separate values by commas
-
-        try {
-            BufferedReader br = new BufferedReader(new FileReader(csvFile));
-
-            int rows = 0;
-            int cols = 0;
-            // find the number of rows and columns in the csv file
-            while ((line = br.readLine()) != null) {
-                String[] values = line.split(splitByCommas);
-                rows++;
-                cols = Math.max(cols, values.length);
+        this.observers = new ArrayList<>();
+        ArrayList<Vehicle> carList = new ArrayList<>();
+        TreeMap<Character, Vehicle> carMap = new TreeMap<>();
+        try (FileReader file = new FileReader(filename);
+             BufferedReader reader = new BufferedReader(file)) {
+            String line = reader.readLine();
+            while (line != null) {
+                String[] vehicle = line.split(",");
+                char symbol = vehicle[0].charAt(0);
+                int backRow = Integer.parseInt(vehicle[1]);
+                int backCol = Integer.parseInt(vehicle[2]);
+                int frontRow = Integer.parseInt(vehicle[3]);
+                int frontCol = Integer.parseInt(vehicle[4]);
+                Position back = new Position(backRow, backCol);
+                Position front = new Position(frontRow, frontCol);
+                Vehicle newCar = new Vehicle(symbol, back, front);
+                carList.add(newCar);
+                carMap.put(symbol, newCar);
+                line = reader.readLine();
             }
-
-            // reset the file reader to read from the beginning of the file
-            br.close();
-            br = new BufferedReader(new FileReader(csvFile));
-
-            // create the 2d array with dynamic dimensions
-            board = new char[rows][cols];
-
-            int row = 0;
-            while ((line = br.readLine()) != null) {
-                String[] values = line.split(splitByCommas);
-
-                // populate the 2d array with the csv values
-                for (int col = 0; col < values.length; col++) {
-                    board[row][col] = values[col].charAt(0);
+        } catch (IOException ioe) {
+            System.out.println("Invalid File.");
+        }
+    
+        // Clear the board before filling it
+        resetBoard();
+    
+        // Place cars on the board
+        for (Vehicle car : carList) {
+            char symbol = car.getSymbol();
+            Position back = car.getBack();
+            Position front = car.getFront();
+    
+            int startRow = Math.min(back.getRow(), front.getRow());
+            int startCol = Math.min(back.getCol(), front.getCol());
+            int endRow = Math.max(back.getRow(), front.getRow());
+            int endCol = Math.max(back.getCol(), front.getCol());
+    
+            for (int i = startRow; i <= endRow; i++) {
+                for (int j = startCol; j <= endCol; j++) {
+                    board[i][j] = symbol;
                 }
-
-                row++; // move to the next row in the 2d array
             }
-
-            br.close();
-
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
+    
 
     // find where the chosen car is
     public Position findVehiclePosition(char chosenVehicle) {

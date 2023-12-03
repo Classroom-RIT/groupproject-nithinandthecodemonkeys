@@ -1,5 +1,7 @@
 package rushhour.model;
 
+import java.util.List;
+
 public class Vehicle {
     private char symbol;
     private Position back;
@@ -39,11 +41,13 @@ public class Vehicle {
         return this.orientation;
     }
 
-    public void move(Direction direction) throws RushHourException {
+    public Move move(Direction direction, List<Position> occupiedSpots, List<Vehicle> vehicles) throws RushHourException {
         int backCol = this.back.getCol();
         int frontCol = this.front.getCol();
         int backRow = this.back.getRow();
         int frontRow = this.front.getRow();
+
+        Move move = new Move(this.symbol, direction);
 
         // if vehicle is horizontal:
         // else
@@ -117,5 +121,10 @@ public class Vehicle {
             }
         }
 
+        return move;
+    }
+
+    public boolean isHorizontal() {
+        return this.orientation.equals(Orientation.HORIZONTAL);
     }
 }

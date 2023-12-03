@@ -25,4 +25,8 @@ public class Position {
         this.col = col;
     }
 
+    public boolean isInBounds(int boardDim) {
+        return this.row >= 0 && this.row < boardDim && this.col >= 0 && this.col < boardDim;
+    }
+    
 }

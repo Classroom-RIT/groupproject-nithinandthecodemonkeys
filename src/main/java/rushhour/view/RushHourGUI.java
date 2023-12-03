@@ -12,6 +12,7 @@ import javafx.stage.Stage;
 import rushhour.model.Direction;
 import rushhour.model.Move;
 import rushhour.model.RushHour;
+import rushhour.model.RushHourException;
 import rushhour.model.Vehicle;
 
 public class RushHourGUI extends Application implements RushHourObserver {
@@ -74,8 +75,20 @@ public class RushHourGUI extends Application implements RushHourObserver {
     
                 final int finalI = i;
                 final int finalJ = j;
+<<<<<<< HEAD
     
                 button.setOnAction(event -> handleButtonClick(finalI, finalJ));
+=======
+
+                button.setOnAction(event -> {
+                    try {
+                        handleButtonClick(finalI, finalJ);
+                    } catch (Exception e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
+                });
+>>>>>>> 6deb47279150aec8d0d7d15967f7e06a44e6ba5e
                 buttons[i][j] = button;
                 gridPane.add(button, j, i);
             }
@@ -108,7 +121,7 @@ public class RushHourGUI extends Application implements RushHourObserver {
         }
     }
 
-    private void handleButtonClick(int row, int col) {
+    private void handleButtonClick(int row, int col) throws RushHourException, Exception {
         char[][] board = rushHour.getBoard();
         char symbol = board[row][col];
 
@@ -135,7 +148,7 @@ public class RushHourGUI extends Application implements RushHourObserver {
         }
     }
 
-    private void showMoveDialog(char symbol) {
+    private void showMoveDialog(char symbol) throws RushHourException, Exception {
 
         // use alert as our modal window
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);

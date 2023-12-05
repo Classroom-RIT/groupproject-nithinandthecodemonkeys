@@ -122,7 +122,7 @@ public class RushHour {
     }
 
     public void moveVehicle(Move move) throws RushHourException, Exception {
-        System.out.println(getOccupiedSpots());
+        // System.out.println("Occupied spots: " + getOccupiedSpots());
         if (carMap.containsKey(move.getSymbol())) {
             Vehicle car = carMap.get(move.getSymbol());
             try {
@@ -366,27 +366,47 @@ public class RushHour {
             System.out.println("Clearing board...");
             System.out.println("New Game");
             rushHour.resetBoard();
+            rushHour.fillboard("data/03_00.csv");
         } else {
             System.out.println("Not a recognized command or format!");
         }
     }
 
-    public static void main(String[] args) throws Exception {
+    public static RushHour startGame() {
         try (Scanner scanner = new Scanner(System.in)) {
-            // System.out.print("Enter a Rush Hour filename: ");
-            // String filename = scanner.nextLine();
-            String filename = "data/03_00.csv";
+            System.out.print("Enter a Rush Hour filename: ");
+            String filename = scanner.nextLine();
+            // String filename = "data/03_00.csv";
+            scanner.close();
             RushHour rushHour = new RushHour(filename);
             System.out.println("Type 'help' for the help menu.");
             rushHour.printBoard();
+            return rushHour;
+        }
+    }
+
+    public static void main(String[] args) throws Exception {
+        // RushHour rushHour = startGame();
+        String command;
+        try (Scanner scanner = new Scanner(System.in)) {
+            System.out.print("Enter a Rush Hour filename: ");
+            String filename = scanner.nextLine();
+            // String filename = "data/03_00.csv";
+            RushHour rushHour = new RushHour(filename);
+            System.out.println("Type 'help' for the help menu.");
+            rushHour.printBoard();
+            // scanner.close();
 
             while (!rushHour.isGameOver()) {
-                Scanner scanner2 = new Scanner(System.in);
-                System.out.print("> ");
-                String command = scanner2.nextLine();
+                // Scanner scanner = new Scanner(System.in);
+                System.out.print("Enter move: ");
+                command = scanner.nextLine();
                 rushHour.parseCommand(rushHour, command);
-                rushHour.printBoard();
+                scanner.close();
+                // rushHour.printBoard();
             }
+            
         }
+
     }
 }

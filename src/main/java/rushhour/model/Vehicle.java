@@ -41,87 +41,47 @@ public class Vehicle {
         return this.orientation;
     }
 
-    public Move move(Direction direction, List<Position> occupiedSpots, List<Vehicle> vehicles) throws RushHourException {
-        int backCol = this.back.getCol();
-        int frontCol = this.front.getCol();
-        int backRow = this.back.getRow();
-        int frontRow = this.front.getRow();
+    public Move move(Direction direction, List<Position> occupiedSpots, List<Vehicle> vehicles)
+            throws RushHourException {
+        Move move = new Move(symbol, direction);
 
-        Move move = new Move(this.symbol, direction);
-
-        // if vehicle is horizontal:
-        // else
-        // throw exception VehicleOrientationException
         if (this.orientation == Orientation.HORIZONTAL) {
-            if (direction == Direction.UP || direction == Direction.DOWN) {
-                throw new RushHourException("Vehicle can't move in that direction");
-            }
-            // if move direction is right or left
-            // if car is not on the edge of the grid, then move vehicle
-            // for horizontal vehicle back.row == front.row && back.col < front.col
-            else {
-                if (direction == Direction.LEFT) {
-                    if (backCol > 0) {
-                        this.back.setCol(backCol - 1);
-                        this.front.setCol(frontCol - 1);
-                    }
-                    // if the movement to the left would make the car go beyond the edge of the
-                    // board then
-                    // throw exception
-                    else {
-                        throw new RushHourException("Your vehicle can't move off the grid.");
-                    }
-                } else if (direction == Direction.RIGHT) {
-                    if (frontCol < 5) {
-                        this.back.setCol(backCol + 1);
-                        this.front.setCol(frontCol + 1);
-                    }
-                    // if the movement to the right would make the car go beyond the edge of the
-                    // board then
-                    // throw exception
-                    else {
-                        throw new RushHourException("Your vehicle can't move off the grid.");
-                    }
-                }
-            }
-        }
-
-        // else vehicle is vertical:
-        else if (this.orientation == Orientation.VERTICAL) {
-            if (direction == Direction.LEFT || direction == Direction.RIGHT) {
-                throw new RushHourException("Vehicle can't move in that direction");
-            }
-            // if move direction is up or down
-            // if car is not on the edge of the grid, then move vehicle
-            // for vertical vehicle back.row < front.row && back.col == front.col
-            else {
-                if (direction == Direction.UP) {
-                    if (backRow < 5) {
-                        this.back.setRow(backRow + 1);
-                        this.front.setRow(frontRow + 1);
-                    }
-                    // if the movement to the left would make the car go beyond the edge of the
-                    // board then
-                    // throw exception
-                    else {
-                        throw new RushHourException("Your vehicle can't move off the grid.");
-                    }
-                } else if (direction == Direction.DOWN) {
-                    if (frontRow > 0) {
-                        this.back.setRow(backRow - 1);
-                        this.front.setRow(frontRow - 1);
-                    }
-                    // if the movement to the down would make the car go beyond the edge of the
-                    // board then
-                    // throw exception
-                    else {
-                        throw new RushHourException("Your vehicle can't move off the grid.");
-                    }
-                }
-            }
+            moveHorizontally(direction);
+        } else if (this.orientation == Orientation.VERTICAL) {
+            moveVertically(direction);
         }
 
         return move;
+    }
+
+    private void moveHorizontally(Direction direction) throws RushHourException {
+        int backCol = this.back.getCol();
+        int frontCol = this.front.getCol();
+
+        if (direction == Direction.LEFT && backCol > 0) {
+            this.back.setCol(backCol - 1);
+            this.front.setCol(frontCol - 1);
+        } else if (direction == Direction.RIGHT && frontCol < 5) {
+            this.back.setCol(backCol + 1);
+            this.front.setCol(frontCol + 1);
+        } else {
+            throw new RushHourException("Invalid move for vehicle " + this.symbol + ".");
+        }
+    }
+
+    private void moveVertically(Direction direction) throws RushHourException {
+        int backRow = this.back.getRow();
+        int frontRow = this.front.getRow();
+
+        if (direction == Direction.UP && backRow < 5) {
+            this.back.setRow(backRow + 1);
+            this.front.setRow(frontRow + 1);
+        } else if (direction == Direction.DOWN && frontRow > 0) {
+            this.back.setRow(backRow - 1);
+            this.front.setRow(frontRow - 1);
+        } else {
+            throw new RushHourException("Invalid move for vehicle " + this.symbol + ".");
+        }
     }
 
     public boolean isHorizontal() {

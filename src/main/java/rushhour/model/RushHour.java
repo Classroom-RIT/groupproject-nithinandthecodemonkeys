@@ -122,7 +122,10 @@ public class RushHour {
     }
 
     public void moveVehicle(Move move) throws RushHourException, Exception {
-        // System.out.println("Occupied spots: " + getOccupiedSpots());
+        // Print the board before the move
+        System.out.println("Board before move:");
+        printBoard();
+
         if (carMap.containsKey(move.getSymbol())) {
             Vehicle car = carMap.get(move.getSymbol());
             try {
@@ -133,6 +136,10 @@ public class RushHour {
 
                     // Update the game board after a valid move
                     updateBoard();
+
+                    // Print the board after the move
+                    System.out.println("Board after move:");
+                    printBoard();
 
                     notifyObservers(car); // notify the observer if the move goes through
                 } else {
@@ -193,7 +200,8 @@ public class RushHour {
         // check if the board has at least 3 rows and 6 columns
         if (board.length >= 3 && board[0].length >= 6) {
             if (board[2][5] == RED_SYMBOL) {
-                notifyObservers(null);
+                Vehicle winningVehicle = carMap.get(RED_SYMBOL);
+                notifyObservers(winningVehicle);
                 return true;
             }
         }
@@ -350,7 +358,7 @@ public class RushHour {
                     System.out.println("No input entered. Please try again.");
                 }
             } finally {
-                scanner.close(); // Close the scanner when you're done with it
+                // scanner.close(); // Close the scanner when you're done with it
             }
 
             // check for solve
@@ -395,17 +403,14 @@ public class RushHour {
             RushHour rushHour = new RushHour(filename);
             System.out.println("Type 'help' for the help menu.");
             rushHour.printBoard();
-            // scanner.close();
 
             while (!rushHour.isGameOver()) {
                 // Scanner scanner = new Scanner(System.in);
-                System.out.print("Enter move: ");
+                System.out.print("> ");
                 command = scanner.nextLine();
                 rushHour.parseCommand(rushHour, command);
-                scanner.close();
-                // rushHour.printBoard();
+                rushHour.printBoard();
             }
-            
         }
 
     }

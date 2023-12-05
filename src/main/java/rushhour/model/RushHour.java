@@ -48,7 +48,6 @@ public class RushHour {
 
     public void fillboard(String filename) {
         this.observers = new ArrayList<>();
-        ArrayList<Vehicle> carList = new ArrayList<>();
 
         try (FileReader file = new FileReader(filename);
                 BufferedReader reader = new BufferedReader(file)) {
@@ -122,10 +121,6 @@ public class RushHour {
     }
 
     public void moveVehicle(Move move) throws RushHourException, Exception {
-        // Print the board before the move
-        System.out.println("Board before move:");
-        printBoard();
-
         if (carMap.containsKey(move.getSymbol())) {
             Vehicle car = carMap.get(move.getSymbol());
             try {
@@ -137,11 +132,11 @@ public class RushHour {
                     // Update the game board after a valid move
                     updateBoard();
 
-                    // Print the board after the move
-                    System.out.println("Board after move:");
-                    printBoard();
-
                     notifyObservers(car); // notify the observer if the move goes through
+
+                    // Update the carList with the moved vehicle
+                    int index = carList.indexOf(car);
+                    carList.set(index, new Vehicle(car.getSymbol(), car.getBack(), car.getFront()));
                 } else {
                     // if the move isn't in the list of possible moves, throw an error
                     throw new RushHourException("Invalid move for vehicle " + move.getSymbol() + ".");
@@ -159,8 +154,8 @@ public class RushHour {
     private void updateBoard() {
         // Clear the board before filling it
         resetBoard();
-
         // Place cars on the board
+        // System.out.println(carList);
         for (Vehicle car : carList) {
             char symbol = car.getSymbol();
             Position back = car.getBack();
@@ -297,14 +292,14 @@ public class RushHour {
                 } else if (direction == Direction.RIGHT) {
                     // Undo the move to the right
                     board[row][col] = symbol;
-                    board[row][col + 2] = EMPTY_SYMBOL;
+                    board[row][col + 1] = EMPTY_SYMBOL;
                 } else if (direction == Direction.UP) {
                     // Undo the move upwards
                     board[row][col] = EMPTY_SYMBOL;
                     board[row + 1][col] = symbol;
                 } else if (direction == Direction.DOWN) {
                     // Undo the move downwards
-                    board[row + 2][col] = EMPTY_SYMBOL;
+                    board[row + 1][col] = EMPTY_SYMBOL;
                     board[row][col] = symbol;
                 }
 
